@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>{{INITIATIVE_NAME}} initiative</title>
+        <title>Never Type initiative</title>
         <meta name="robots" content="noindex" />
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -105,13 +105,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">{{INITIATIVE_NAME}} initiative</h1>
+                    <h1 class="menu-title">Never Type initiative</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        <a href="https://github.com/rust-lang/{{INITIATIVE_SLUG}}" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/rust-lang/never-type-initiative" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
                     </div>
@@ -138,7 +138,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="initiative_name-initiative"><a class="header" href="#initiative_name-initiative">{{INITIATIVE_NAME}} initiative</a></h1>
+                        <h1 id="never-type-initiative"><a class="header" href="#never-type-initiative">Never type initiative</a></h1>
 <!--
 
  This is the template for creating an initiative in rust-lang. Be sure to go
@@ -151,7 +151,7 @@
  * Edit CHARTER.md
  * Replace placeholder text (see below)
  * Remove references to "expermental" and "evaluation" unless you need them
- 
+
   All of the text across all of the initial files uses the same group of
  variables to allow for easy search and replace. They are listed below.
 
@@ -171,13 +171,11 @@ https://github.com/rust-lang/infra-team/issues/new
 -->
 <p><img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt="initiative status: active" /></p>
 <h2 id="what-is-this"><a class="header" href="#what-is-this">What is this?</a></h2>
-<p>This page tracks the work of the {{INITIATIVE_NAME}} <a href="https://lang-team.rust-lang.org/initiatives.html">initiative</a>! To learn more about what we are trying to do, and to find out the people who are doing it, take a look at the <a href="./CHARTER.html">charter</a>. </p>
+<p>This page tracks the work of the never type <a href="https://lang-team.rust-lang.org/initiatives.html">initiative</a>! To learn more about what we are trying to do, and to find out the people who are doing it, take a look at the <a href="./CHARTER.html">charter</a>.</p>
 <h2 id="current-status"><a class="header" href="#current-status">Current status</a></h2>
 <p>The following table lists of the stages of an initiative, along with links to the artifacts that will be produced during that stage.</p>
 <table><thead><tr><th>Stage</th><th>State</th><th>Artifact(s)</th></tr></thead><tbody>
-<tr><td><a href="https://lang-team.rust-lang.org/initiatives/process/stages/proposal.html">Proposal</a></td><td>✅</td><td><a href="https://github.com/rust-lang/lang-team/">Proposal issue</a></td></tr>
-<tr><td></td><td></td><td><a href="./CHARTER.html">Charter</a></td></tr>
-<tr><td></td><td></td><td><a href="https://github.com/rust-lang/rust/">Tracking issue</a></td></tr>
+<tr><td><a href="https://lang-team.rust-lang.org/initiatives/process/stages/proposal.html">Proposal</a></td><td>✅</td><td><a href="https://github.com/rust-lang/rust/issues/35121">Tracking issue</a></td></tr>
 <tr><td><a href="https://lang-team.rust-lang.org/initiatives/process/stages/proposal.html">Experimental</a></td><td>🦀</td><td><a href="./evaluation.html">Evaluation</a></td></tr>
 <tr><td></td><td></td><td><a href="./RFC.html">RFC</a></td></tr>
 <tr><td><a href="https://lang-team.rust-lang.org/initiatives/process/stages/development.html">Development</a></td><td>💤</td><td><a href="./explainer.html">Explainer</a></td></tr>
@@ -194,12 +192,12 @@ https://github.com/rust-lang/infra-team/issues/new
 <ul>
 <li>Check for 'help wanted' issues on this repository!</li>
 <li>If you would like to help with development, please contact the <a href="./charter.html#membership">owner</a> to find out if there are things that need doing.</li>
-<li>If you would like to help with the design, check the list of active <a href="./design-questions/README.html">design questions</a> first. </li>
+<li>If you would like to help with the design, check the list of active <a href="./design-questions/README.html">design questions</a> first.</li>
 <li>If you have questions about the design, you can file an issue, but be sure to check the <a href="./FAQ.html">FAQ</a> or the <a href="./design-questions/README.html">design-questions</a> first to see if there is already something that covers your topic.</li>
 <li>If you are using the feature and would like to provide feedback about your experiences, please [open a &quot;experience report&quot; issue].</li>
 <li>If you are using the feature and would like to report a bug, please open a regular issue.</li>
 </ul>
-<p>We also participate on <a href="%7B%7BCHAT_LINK%7D%7D">{{CHAT_PLATFORM}}</a>, feel free to introduce yourself over there and ask us any questions you have.</p>
+<p>We also participate on <a href="https://rust-lang.zulipchat.com/#narrow/stream/259160-t-lang.2Fproject-never-type">Zulip</a>, feel free to introduce yourself over there and ask us any questions you have.</p>
 <h2 id="building-documentation"><a class="header" href="#building-documentation">Building Documentation</a></h2>
 <p>This repository is also an mdbook project. You can view and build it using the
 following command.</p>
@@ -247,12 +245,345 @@ If you want to experiment with the feature, you've come to the right place.
 Until the feature enters &quot;feature complete&quot; form, the explainer should be considered a work-in-progress.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-rfc"><a class="header" href="#-rfc">✨ RFC</a></h1>
-<blockquote>
-<p>The RFC exists here in draft form. It will be edited and amended over the course of this initiative.
-Note that some initiatives produce multiple RFCs.</p>
-<p>Until there is an accepted RFC, any feature gates must be labeled as experimental.</p>
-<p>When you're ready to start drafting, copy in the <a href="https://raw.githubusercontent.com/rust-lang/rfcs/master/0000-template.md">template text</a> from the <a href="https://github.com/rust-lang/rfcs">rfcs</a> repository.</p>
-</blockquote>
+<ul>
+<li>Feature Name: never_type, never_type_fallback</li>
+<li>Start Date: TBD</li>
+<li>RFC PR: Past <a href="https://github.com/rust-lang/rfcs/pull/1216">rust-lang/rfcs#1216</a></li>
+<li>Rust Issue: TBD</li>
+</ul>
+<h1 id="summary"><a class="header" href="#summary">Summary</a></h1>
+<p>Promote <code>!</code> to be a full-fledged type equivalent to an <code>enum</code> with no variants,
+and adjust default inference fallback to avoid breakage.</p>
+<h1 id="guide-level-explanation"><a class="header" href="#guide-level-explanation">Guide level explanation</a></h1>
+<p>While empty types exist already in Rust today, for example in the form of <code>enum Foo {}</code>, most Rust users will not be directly familiar with them, so this RFC
+provides an explanation of the properties these types hold (and that <code>!</code> will
+hold).</p>
+<ul>
+<li>
+<p><strong>They never exist at runtime</strong>, because there is no way to create one.</p>
+</li>
+<li>
+<p><strong>Code that handles them cannot execute</strong>, because there is no value that it
+could execute with. Therefore, having an empty type in scope is a static
+guarantee that a piece of code will never be run.</p>
+</li>
+<li>
+<p><strong>They represent the return type of functions that don't return</strong>. For a
+function that never returns, such as <code>std::process::exit</code>, the set of all
+values it may return is the empty set. That is to say, the type of all
+values it may return is the type of no inhabitants, ie. <code>Never</code> or anything
+isomorphic to it. Similarly, they are the logical type for expressions that
+never return to their caller such as <code>break</code>, <code>continue</code> and <code>return</code>.</p>
+</li>
+<li>
+<p><strong>They can be converted to any other type</strong>.
+To specify a function <code>A -&gt; B</code> we need to specify a return value in <code>B</code> for
+every possible argument in <code>A</code>. For example, an expression that converts
+<code>bool -&gt; T</code> needs to specify a return value for both possible arguments
+<code>true</code> and <code>false</code>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let foo: &amp;'static str = match x {
+  true  =&gt; &quot;some_value&quot;,
+  false =&gt; &quot;some_other_value&quot;,
+};
+<span class="boring">}
+</span></code></pre></pre>
+<p>Likewise, an expression to convert <code>() -&gt; T</code> needs to specify one value,
+the value corresponding to <code>()</code>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let foo: &amp;'static str = match x {
+  ()  =&gt; &quot;some_value&quot;,
+};
+<span class="boring">}
+</span></code></pre></pre>
+<p>And following this pattern, to convert <code>Never -&gt; T</code> we need to specify a
+<code>T</code> for every possible <code>Never</code>. Of which there are none:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let foo: &amp;'static str = match x { };
+<span class="boring">}
+</span></code></pre></pre>
+<p>Reading this, it may be tempting to ask the question &quot;what is the value of
+<code>foo</code> then?&quot;. Remember that this depends on the value of <code>x</code>. As there are
+no possible values of <code>x</code> it's a meaningless question and besides, the
+fact that <code>x</code> has type <code>Never</code> gives us a static guarantee that the match
+block will never be executed.</p>
+</li>
+</ul>
+<p>Here's some example code that uses <code>Never</code>. This is legal rust code that you
+can run today.</p>
+<pre><pre class="playground"><code class="language-rust">use std::process::exit;
+
+// Our empty type
+enum Never {}
+
+// A diverging function with an ordinary return type
+fn wrap_exit() -&gt; Never {
+    exit(0);
+}
+
+// we can use a `Never` value to diverge without using unsafe code or calling
+// any diverging intrinsics
+fn diverge_from_never(n: Never) -&gt; ! {
+    match n {
+    }
+}
+
+fn main() {
+    let x: Never = wrap_exit();
+    // `x` is in scope, everything below here is dead code.
+
+    let y: String = match x {
+        // no match cases as `!` is uninhabited
+    };
+
+    // we can still use `y` though
+    println!(&quot;Our string is: {}&quot;, y);
+
+    // we can use `x` to diverge
+    diverge_from_never(x)
+}
+</code></pre></pre>
+<p>This RFC proposes that we allow <code>!</code> to be used directly, as a type, rather than
+using <code>Never</code> (or equivalent) in its place. Under this RFC, the above code
+could more simply be written.</p>
+<pre><pre class="playground"><code class="language-rust">use std::process::exit;
+
+fn main() {
+    let x: ! = exit(0);
+    // `x` is in scope, everything below here is dead code.
+
+    let y: String = match x {
+        // no match cases as `Never` has no variants
+    };
+
+    // we can still use `y` though
+    println!(&quot;Our string is: {}&quot;, y);
+
+    // we can use `x` to diverge
+    x
+}
+</code></pre></pre>
+<h1 id="motivation"><a class="header" href="#motivation">Motivation</a></h1>
+<p>There are several key motivators for adding <code>!</code>, despite the existence of empty
+types in the language already.</p>
+<h2 id="it-creates-a-standard-empty-type-for-use-throughout-rust-code"><a class="header" href="#it-creates-a-standard-empty-type-for-use-throughout-rust-code">It creates a standard empty type for use throughout Rust code</a></h2>
+<p>Empty types are useful for more than just marking functions as diverging.
+When used in an enum variant they prevent the variant from ever being
+instantiated. One major use case for this is if a method needs to return a
+<code>Result&lt;T, E&gt;</code> to satisfy a trait but we know that the method will always
+succeed.</p>
+<p>For example, here's a possible implementation of <code>FromStr</code> for <code>String</code> than
+currently exists in <code>libstd</code>.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl FromStr for String {
+    type Err = !;
+
+    fn from_str(s: &amp;str) -&gt; Result&lt;String, !&gt; {
+        Ok(String::from(s))
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This result can then be safely unwrapped to a <code>String</code> without using
+code-smelly things like <code>unreachable!()</code> which often mask bugs in code.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let r: Result&lt;String, !&gt; = FromStr::from_str(&quot;hello&quot;);
+let s = match r {
+    Ok(s)   =&gt; s,
+    Err(e)  =&gt; match e {},
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The <code>Try</code> trait family is written with never type in mind, and currently
+relies on the <code>enum Infallible {}</code> defined in libcore as a substitute.</p>
+<p>Empty types can also be used when someone needs a dummy type to implement a
+trait. Because <code>!</code> can be converted to any other type it has a trivial
+implementation of any trait whose only associated items are non-static
+methods. The impl simply matches on self for every method.</p>
+<p>Example:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait ToSocketAddr {
+    fn to_socket_addr(&amp;self) -&gt; IoResult&lt;SocketAddr&gt;;
+    fn to_socket_addr_all(&amp;self) -&gt; IoResult&lt;Vec&lt;SocketAddr&gt;&gt;;
+}
+
+impl ToSocketAddr for ! {
+    fn to_socket_addr(&amp;self) -&gt; IoResult&lt;SocketAddr&gt; {
+        match self {}
+    }
+
+    fn to_socket_addr_all(&amp;self) -&gt; IoResult&lt;Vec&lt;SocketAddr&gt;&gt; {
+        match self {}
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>All possible implementations of this trait for <code>!</code> are equivalent. This is
+because any two functions that take a <code>!</code> argument and return the same type
+are equivalent - they return the same result for the same arguments and
+have the same effects (because they are uncallable).</p>
+<p>Suppose someone wants to call <code>fn foo&lt;T: SomeTrait&gt;(arg: Option&lt;T&gt;)</code> with
+<code>None</code>. They need to choose a type for <code>T</code> so they can pass <code>None::&lt;T&gt;</code> as
+the argument. However there may be no sensible default type to use for <code>T</code>
+or, worse, they may not have any types at their disposal that implement
+<code>SomeTrait</code>. As the user in this case is only using <code>None</code>, a sensible
+choice for <code>T</code> would be a type such that <code>Option&lt;T&gt;</code> can ony be <code>None</code>, i.e.
+it would be nice to use <code>!</code>.</p>
+<p>While the trait author or user could define their own empty type and
+implement the trait themselves, it is useful to avoid the hassle of needing
+to import the appropriate type in order to specify it in cases like this.</p>
+<h2 id="better-dead-code-detection"><a class="header" href="#better-dead-code-detection">Better dead code detection</a></h2>
+<p>Consider the following code:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let t = std::thread::spawn(|| panic!(&quot;nope&quot;));
+t.join().unwrap();
+println!(&quot;hello&quot;);
+<span class="boring">}
+</span></code></pre></pre>
+<p>Under this RFC: the closure body gets typed <code>!</code> instead of <code>()</code>, the <code>unwrap()</code>
+gets typed <code>!</code>, and the <code>println!</code> will raise a dead code warning. This
+requires a canonical empty type to fallback to for the type of expressions
+like <code>panic!()</code>.</p>
+<p>To be clear, <code>!</code> has a meaning in any situation that any other type does. A <code>!</code>
+function argument makes a function uncallable, a <code>Vec&lt;!&gt;</code> is a vector that can
+never contain an element, a <code>!</code> enum variant makes the variant guaranteed never
+to occur and so forth. It might seem pointless to use a <code>!</code> function argument or
+a <code>Vec&lt;!&gt;</code>, but that's no reason to disallow it. And generic code sometimes
+requires it.</p>
+<p>It's also worth noting that the <code>!</code> proposed here is <em>not</em> the bottom type that
+used to exist in Rust in the very early days. Making <code>!</code> a subtype of all types
+would greatly complicate things as it would require, for example, <code>Vec&lt;!&gt;</code> be a
+subtype of <code>Vec&lt;T&gt;</code>. This <code>!</code> is simply an empty type (albeit one that can be
+cast to any other type).</p>
+<h1 id="reference-level-explanation"><a class="header" href="#reference-level-explanation">Reference-level explanation</a></h1>
+<p>Add a new primitive type <code>!</code> to Rust. <code>!</code> behaves like an empty enum except that
+it can be implicitly cast to any other type. For example, code like the
+following is acceptable:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let r: Result&lt;i32, !&gt; = Ok(23);
+let i = match r {
+    Ok(i)   =&gt; i,
+    Err(e)  =&gt; e, // e is cast to i32
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>We also adjust the type inference algorithm used by rustc to fallback to <code>!</code>
+rather than <code>()</code> when an inference variable ends up unconstrained. This change
+is motivated by the desire to provide a better experience for Rust users since
+expressions typed at <code>!</code> can be coerced into other types. If we avoid making
+this change, we have to specify that expressions like <code>loop {}</code> and <code>panic!()</code>
+continue to &quot;return&quot; <code>()</code>, which seems obviously wrong.</p>
+<p>Adjusting type inference to fallback to <code>!</code> also helps set us on a path towards
+removing some of the fallback and <em>requiring</em> explicit types in the future, as
+we can be more confident that the code involved is somewhat faulty.</p>
+<h2 id="ensuring-soundness"><a class="header" href="#ensuring-soundness">Ensuring soundness</a></h2>
+<p>However, this change to fallback is not generally sound in the presence of
+unsafe code that is present in the wild today. The following is a piece of
+example code that was previously OK, but with the proposed change has undefined
+behavior.  It's a stripped down example -- the code is already unsound in the
+sense that <code>unconstrained_return</code> must only be called with valid <code>T</code>, but in
+practice code like this exists and does not cause UB (as it never gets
+instantiated with an incorrect <code>T</code>) with today's compiler.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn unconstrained_return&lt;T&gt;() -&gt; Result&lt;T, String&gt; {
+    let ffi: fn() -&gt; T = std::mem::transmute(some_pointer);
+    Ok(ffi())
+}
+
+fn foo() {
+    let _a = match unconstrained_return::&lt;_&gt;() {
+        Ok(a) =&gt; a,
+        Err(s) =&gt; panic!(&quot;failed to run&quot;),
+    };
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The match here has type <code>?M</code> and the two arms have types <code>?T</code> and <code>!</code>, as
+<code>panic!</code> has type <code>!</code> with these changes. <code>?T</code> here is effectively
+unconstrained, so it falls back to <code>!</code> with the proposed change to type
+inference. As a result, <code>unconstrained_return</code>'s call to <code>ffi()</code> has a return
+type of <code>!</code>, which means that the compiler is free to assume that the function
+does not return. Since <code>ffi()</code> in practice does return, this leads to UB.</p>
+<p>So we cannot simply change fallback in all cases.</p>
+<p>We propose an algorithm which indicates whether it is safe to fallback to <code>!</code>.</p>
+<p>For each inference variable still present during fallback (i.e. those which are
+unconstrained), we look at the relationships between these inference variables
+to determine whether to keep the fallback to <code>()</code> or fallback to <code>!</code>.</p>
+<p>We construct a directed graph where the vertices are inference variables, and
+add edges <code>?A -&gt; ?B</code> if <code>?A</code> is coerced into <code>?B</code>.</p>
+<p>Let <code>D</code> be the set of type variables <code>?X</code> which were created as a result of the
+coercion of <code>! -&gt; ?X</code> being proposed. These can arise from functions returning
+<code>!</code> or <code>loop {}</code> expressions, which can coerce into any type.</p>
+<p>For each type variable <code>?T</code>, we fallback to:</p>
+<ul>
+<li><code>!</code> if the variable is dominated in the graph by the set <code>D</code> (that is, there
+is no path from a non-diverging type variable to it).</li>
+<li><code>()</code> otherwise.</li>
+</ul>
+<p>The intuition here is that variables reachable only from diverging type
+variables must be in dead code, but if they are <em>also</em> reachable from some
+non-diverging type variable, they may be in live code, and so fallback to <code>!</code> is
+unsound.</p>
+<h2 id="avoiding-regressions"><a class="header" href="#avoiding-regressions">Avoiding regressions</a></h2>
+<p>The proposed graph is sufficient for soundness, but unfortunately is
+insufficient to avoid a good number of regressions. We add an additional
+heuristic that mitigates most of the remaining breakage (~100 crates per
+Crater), leaving ~25 regressions.</p>
+<p>This heuristic adds another case of fallback of <code>?T</code> to <code>()</code> when we encounter the
+following:</p>
+<ul>
+<li><code>?T: Foo</code> and</li>
+<li><code>Bar::Baz = ?T</code> and</li>
+<li><code>(): Foo</code></li>
+</ul>
+<p>This pattern is commonly encountered in code which constrains the return type of
+some closure, and where closure instances frequently contain <code>panic!()</code>. With
+the previously proposed fallback, there is no additional constraint on <code>?T</code>
+(it's not flowing into any other inference variables), so it is reasonable for
+it to fallback to <code>!</code>. However, in practice, that causes breakage, as the
+closure's return type is restricted to <code>Bar</code>, which is only implemented for <code>()</code>
+(and <code>u32</code>).</p>
+<pre><pre class="playground"><code class="language-rust">// Crate A:
+pub trait Bar { }
+impl Bar for () {  }
+impl Bar for u32 {  }
+
+pub fn foo&lt;R: Bar&gt;(_: impl Fn() -&gt; R) {}
+
+// Crate B:
+fn main() {
+    foo(|| panic!());
+}
+</code></pre></pre>
+<h1 id="alternatives"><a class="header" href="#alternatives">Alternatives</a></h1>
+<h2 id="leave-infallible-as-the-standard-empty-type"><a class="header" href="#leave-infallible-as-the-standard-empty-type">Leave <code>Infallible</code> as the standard empty type</a></h2>
+<p>We could abandon the effort to stabilize <code>!</code> as a dedicated return type, instead
+leaving the currently existing <code>Infallible</code> as the standard empty type. There
+are several downsides to this:</p>
+<ul>
+<li>Users need to learn two different canonical names (<code>!</code> if standalone in a function return
+types and <code>Infallible</code> for other places)</li>
+<li><code>Infallible</code> is either special-cased to coerce to other types or users need to
+write <code>match foo {}</code> to get that behavior.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-frequently-asked-questions"><a class="header" href="#-frequently-asked-questions">😕 Frequently asked questions</a></h1>
 <blockquote>
 <p>This page lists frequently asked questions about the design. It often redirects to the other pages on the site.</p>
