@@ -1,15 +1,15 @@
 [book]
-authors = ["{{INITIATIVE_NAME}} Members"]
+authors = ["Never Type Members"]
 language = "en"
 multilingual = false
 src = "."
-title = "{{INITIATIVE_NAME}} initiative"
+title = "Never Type initiative"
 
 [output.html]
 no-section-label=true
-git-repository-url="https://github.com/rust-lang/{{INITIATIVE_SLUG}}"
-edit-url-template="https://github.com/rust-lang/{{INITIATIVE_SLUG}}/edit/master/{path}"
-site-url="/{{INITIATIVE_SLUG}}/"
+git-repository-url="https://github.com/rust-lang/never-type-initiative"
+edit-url-template="https://github.com/rust-lang/never-type-initiative/edit/master/{path}"
+site-url="/never-type-initiative/"
 
 [output.html.fold]
 enable = true
