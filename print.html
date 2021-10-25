@@ -584,6 +584,42 @@ types and <code>Infallible</code> for other places)</li>
 <li><code>Infallible</code> is either special-cased to coerce to other types or users need to
 write <code>match foo {}</code> to get that behavior.</li>
 </ul>
+<h2 id="edition-based-fallback"><a class="header" href="#edition-based-fallback">Edition-based fallback?</a></h2>
+<p>We considered whether the fallback algorithm could be adjusted over an edition
+boundary to permit stabilizing never type. In practice, this doesn't work
+because the never type is a vocabulary type and so is present in the public API
+of various crates (including core/std, after stabilization).</p>
+<p>This means that while the fallback within a library might be edition-dependent,
+we'd still need to stabilize full use of <code>!</code> across all editions. That basically
+puts prior editions on the same grounds as <em>just</em> stabilizing <code>!</code>, which is
+known to introduce regressions.</p>
+<p>Generally it seems pretty clear that stabilizing never type (or fallback
+changes) only on a subset of editions would lead to a more challenging landscape
+for Rust users. For example, as we've seen, fallback has implications for
+soundness, so we'd still need all of the complexity in the fallback algorithm in
+order to prevent cases like the one described above -- this seems to just make
+things more complicated, rather than improving them.</p>
+<h1 id="future-work"><a class="header" href="#future-work">Future work</a></h1>
+<h2 id="removing-parts-of-fallback"><a class="header" href="#removing-parts-of-fallback">Removing (parts of) fallback</a></h2>
+<p>We can consider removing some of the cases of fallback, particularly those which
+cause problems for this RFC, in the future. There were several examples
+encountered in Crater and elsewhere that required effort to deduce the inferred
+type. Additionally, we believe that it's likely that cases of fallback to <code>()</code>
+in new code are likely better written in other ways and we may wish to force the
+user to indicate a type rather than silently providing one that may cause
+trouble or hurt diagnostic quality.</p>
+<p>We can leverage editions to remove parts of fallback. Unlike the phase-in of
+never type fallback, <em>removing</em> fallback only prevents code from compiling and
+does not change the behavior of existing code. This is fairly standard for
+cross-edition changes, and so is much more straightforward to design.</p>
+<p>However, this RFC does not propose a particular path towards removing/improving
+our fallback algorithms, beyond noting that it may be advantageous to do so. If
+we do so, we can likely end up avoiding the more complex fallback algorithm
+proposed by this RFC being a permanent feature of future Rust editions.</p>
+<h1 id="unresolved-questions"><a class="header" href="#unresolved-questions">Unresolved questions</a></h1>
+<ul>
+<li>Pending (needs review of the above)</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-frequently-asked-questions"><a class="header" href="#-frequently-asked-questions">😕 Frequently asked questions</a></h1>
 <blockquote>
 <p>This page lists frequently asked questions about the design. It often redirects to the other pages on the site.</p>
