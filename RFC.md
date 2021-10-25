@@ -364,3 +364,48 @@ are several downsides to this:
   types and `Infallible` for other places)
 * `Infallible` is either special-cased to coerce to other types or users need to
   write `match foo {}` to get that behavior.
+
+## Edition-based fallback?
+
+We considered whether the fallback algorithm could be adjusted over an edition
+boundary to permit stabilizing never type. In practice, this doesn't work
+because the never type is a vocabulary type and so is present in the public API
+of various crates (including core/std, after stabilization).
+
+This means that while the fallback within a library might be edition-dependent,
+we'd still need to stabilize full use of `!` across all editions. That basically
+puts prior editions on the same grounds as *just* stabilizing `!`, which is
+known to introduce regressions.
+
+Generally it seems pretty clear that stabilizing never type (or fallback
+changes) only on a subset of editions would lead to a more challenging landscape
+for Rust users. For example, as we've seen, fallback has implications for
+soundness, so we'd still need all of the complexity in the fallback algorithm in
+order to prevent cases like the one described above -- this seems to just make
+things more complicated, rather than improving them.
+
+# Future work
+
+## Removing (parts of) fallback
+
+We can consider removing some of the cases of fallback, particularly those which
+cause problems for this RFC, in the future. There were several examples
+encountered in Crater and elsewhere that required effort to deduce the inferred
+type. Additionally, we believe that it's likely that cases of fallback to `()`
+in new code are likely better written in other ways and we may wish to force the
+user to indicate a type rather than silently providing one that may cause
+trouble or hurt diagnostic quality.
+
+We can leverage editions to remove parts of fallback. Unlike the phase-in of
+never type fallback, *removing* fallback only prevents code from compiling and
+does not change the behavior of existing code. This is fairly standard for
+cross-edition changes, and so is much more straightforward to design.
+
+However, this RFC does not propose a particular path towards removing/improving
+our fallback algorithms, beyond noting that it may be advantageous to do so. If
+we do so, we can likely end up avoiding the more complex fallback algorithm
+proposed by this RFC being a permanent feature of future Rust editions.
+
+# Unresolved questions
+
+* Pending (needs review of the above)
