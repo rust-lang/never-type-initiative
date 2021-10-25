@@ -406,6 +406,19 @@ our fallback algorithms, beyond noting that it may be advantageous to do so. If
 we do so, we can likely end up avoiding the more complex fallback algorithm
 proposed by this RFC being a permanent feature of future Rust editions.
 
+## Special casing trait impls for !
+
+`!` is useful as a standard marker inside types which may derive various traits.
+Implementing a trait for `!` is frequently fairly annoying, as you need to write
+out many functions which are largely inconsequential as they can never run (if
+they have a `self` parameter).
+
+For now, the expectation is that library authors will want to add manual
+impls for standard traits (including in the standard library), but a future
+extension could let users write (potentially) overlapping trait impls for `!` so
+long as the body of the trait is "obviously equivalent" as the methods can't be
+called.
+
 # Unresolved questions
 
 * Pending (needs review of the above)
