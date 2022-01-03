@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item "><a href="index.html">👋 Welcome</a></li><li class="chapter-item "><a href="updates.html">✏️ Updates</a></li><li class="chapter-item "><a href="CHARTER.html">📜 Charter</a></li><li class="chapter-item "><a href="evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="evaluation/no-inference-changes.html">No inference changes</a></li></ol></li><li class="chapter-item "><a href="explainer.html">📚 Explainer</a></li><li class="chapter-item "><a href="RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="FAQ.html">😕 FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item "><a href="index.html">👋 Welcome</a></li><li class="chapter-item "><a href="updates.html">✏️ Updates</a></li><li class="chapter-item "><a href="CHARTER.html">📜 Charter</a></li><li class="chapter-item "><a href="evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="evaluation/issues.html">PRs/Issues</a></li><li class="chapter-item "><a href="evaluation/no-inference-changes.html">No inference changes</a></li></ol></li><li class="chapter-item "><a href="explainer.html">📚 Explainer</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="explainer/conditional-fallback-v1.html">Conditional Fallback v1</a></li></ol></li><li class="chapter-item "><a href="RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="FAQ.html">😕 FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -238,6 +238,49 @@ It is not required for all initiatives, only those that begin with a problem sta
 but without a clear picture of the best solution. Often the evaluation will refer to topics
 in the <a href="./design-discussions.html">design-discussions</a> for more detailed consideration.</p>
 </blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="prsissues"><a class="header" href="#prsissues">PRs/Issues</a></h1>
+<p>This is intended to give a relatively quick link list to relevant issues/PRs or
+individual comments, for possible referencing/inclusion elsewhere.</p>
+<h1 id="necessity-of-fallback-changes"><a class="header" href="#necessity-of-fallback-changes">Necessity of fallback changes</a></h1>
+<p>Canonical example of inference failure with no-inference-change scenario.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct E;
+
+impl From&lt;!&gt; for E {
+    fn from(_: !) -&gt; E {
+        E
+    }
+}
+
+#[allow(unreachable_code)]
+fn foo(never: !) {
+    &lt;E as From&lt;!&gt;&gt;::from(never);  // Ok
+    &lt;E as From&lt;_&gt;&gt;::from(never);  // Inference fails here
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Discussion in:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/rust/issues/67225">#67225</a></li>
+<li><a href="https://github.com/rust-lang/rust/issues/66757">#66757</a>
+<ul>
+<li><a href="https://github.com/rust-lang/rust/issues/66757#issuecomment-559771169">Possible options</a></li>
+<li><a href="https://github.com/rust-lang/rust/issues/66757#issuecomment-560571316">Necessity of fallback</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="conditional-fallback"><a class="header" href="#conditional-fallback">Conditional fallback</a></h1>
+<p>See <a href="evaluation/../explainer/conditional-fallback-v1.html">v1</a> explainer for the details of
+the core algorithm.</p>
+<p>Most of this code is implemented, gated on <code>never_type_fallback</code>,  landed in
+<a href="https://github.com/rust-lang/rust/pull/88149">#88149</a> (primarily refactoring) and
+<a href="https://github.com/rust-lang/rust/pull/88804">#88804</a> (most of the changes).</p>
+<h1 id="pain-point--confusing-behavior"><a class="header" href="#pain-point--confusing-behavior">Pain point / confusing behavior</a></h1>
+<ul>
+<li><a href="https://github.com/rust-lang/rust/issues/66738">Closure return types are <code>()</code> even if body <code>!</code></a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><p>This discusses the impact of just stabilizing <code>!</code> syntax and changing
 <code>std::convert::Infallible</code> to be an alias for <code>!</code>. (That is, no inference
 algorithm changes).</p>
@@ -339,6 +382,120 @@ errors.</p>
 If you want to experiment with the feature, you've come to the right place.
 Until the feature enters &quot;feature complete&quot; form, the explainer should be considered a work-in-progress.</p>
 </blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="never-type-fallback-proposal"><a class="header" href="#never-type-fallback-proposal">Never type fallback proposal</a></h1>
+<p>This is a proposal for an alternative scheme for never type fallback. This scheme, while not fully backwards compatible, sidesteps the problems we've encountered so far in attempting to stabilize the <code>!</code> type:</p>
+<ul>
+<li>Unsound type inference changes from changing fallback, as described in <a href="https://github.com/rust-lang/rust/issues/66173">#66173</a>. These problems result from changing the fallback from <code>()</code> to <code>!</code> for type variables wind up interacting with &quot;live code&quot;, resulting in <code>!</code> values being created.</li>
+<li>Regressions from having no fallback at all, as described in <a href="https://github.com/rust-lang/rust/issues/67225">#67225</a> and <a href="https://github.com/rust-lang/rust/issues/66757">#66757</a>.</li>
+</ul>
+<h2 id="background"><a class="header" href="#background">Background</a></h2>
+<p>The current fallback scheme is based on the concept of &quot;diverging&quot; type variables. In short, a <code>!</code> type can be coerced to any other type. But when it is inferred to an unknown type <code>?T</code> (a type variable), the way that we handle it is to create a <em>diverging</em> type variable <code>?D</code> and unify the two. Once type-checking is complete, we walk over any unbound type variables. If <code>?D</code> has not yet been unified with any concrete type (it may have been unified or related to other <em>general type variables</em>, but none of those type variables have yet been assigned a type), then it will &quot;fallback&quot; to a specified type. In current Rust, that type is <code>()</code>. The <code>!</code> type RFC proposed changing that fallback type to <code>!</code> (as part of introducing the concept of <code>!</code> as a standalone type). The idea behind this fallback is that since <code>?D</code> represents the type of an expression that is known to diverge, what actual type it is assigned to doesn't matter, since it can never affect live code. Unfortunately, this premise is false.</p>
+<h3 id="bug-66173-unsoundness-introduced-by-changing-fallback-from--to-"><a class="header" href="#bug-66173-unsoundness-introduced-by-changing-fallback-from--to-">Bug 66173: Unsoundness introduced by changing fallback from <code>!</code> to <code>()</code></a></h3>
+<p>As described in <a href="https://github.com/rust-lang/rust/issues/66173">#66173</a>, we have found in practice that the fallback of diverging type variables <em>can</em> impact the types assigned to live code. The most common problem involves match patterns. Consider the following pattern:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let x = match something() {
+    pattern1 =&gt; Default::default(),
+    pattern2 =&gt; panic!(&quot;...&quot;),
+};
+<span class="boring">}
+</span></code></pre></pre>
+<p>In a case like this, the type of the match is ultimately represented by a type variable <code>?M</code>. The first arm is assigned a type variable <code>?T</code> and the second arm (which panics) gets the type <code>!</code>. Both <code>?T</code> and <code>!</code> are coerced into <code>?M</code>:</p>
+<pre><code>?T -&gt; ?M
+! -&gt; ?M
+</code></pre>
+<p>The first coercion creates a subtyping relationship (<code>?T &lt;: ?M</code>) because the two types are unknown. The second coercion creates a diverging type variable <code>?D</code> and a subtyping relationship <code>?D &lt;: ?M</code>.</p>
+<p>The problem now is that if <code>?D</code> falls back to <code>!</code>, then this winds up causing <code>?M</code> and <code>?T</code> to both be assigned the type <code>!</code>. In this <em>particular</em> example the result is a compilation error, because <code>Default</code> is not implemented for <code>!</code>, but in <a href="https://github.com/rust-lang/rust/issues/66173#issuecomment-574892360">other examples</a> the result was unsound execution.</p>
+<p>This example prompted us to hold off on changing the fallback from <code>()</code> to <code>!</code>. The result is in some way no less surprising: the type of <code>Default::default</code> winds up falling back to <code>()</code>, rather than (say) requiring an explicit type annotation. However, at least using <code>()</code> didn't produce unsound behavior in previously sound code.</p>
+<h3 id="bug-66757-regressions-introduced-by-not-changing-fallback"><a class="header" href="#bug-66757-regressions-introduced-by-not-changing-fallback">Bug 66757: Regressions introduced by NOT changing fallback</a></h3>
+<p>Unfortunately, if we don't change the fallback to <code>!</code>, then we also trigger other sorts of regressions (at least if we want to also redefine the <code>Infallible</code> type in the stdlib). As described in <a href="https://github.com/rust-lang/rust/issues/66757">#66757</a>, the fundamental problem is that we <em>have</em> a <code>From&lt;!&gt;</code> impl for any type <code>E</code>, but we <em>don't</em> have a <code>From&lt;()&gt;</code> impl. So when we have code that requires <code>From&lt;?D&gt;</code> where <code>?D</code> is a diverging type variable, falling back to <code>!</code> is preferred.</p>
+<p>This is related to the fact that <code>!</code> is in many cases the <em>right</em> fallback! If you have code like <code>Some(return)</code>, you would prefer that the type of this expression (if not otherwise constrained) is <code>Option&lt;!&gt;</code>, not <code>Option&lt;()&gt;</code>. In the case of <a href="https://github.com/rust-lang/rust/issues/66757">#66757</a>, we had similar code like <code>From::from(never)</code> where <code>never: Infallible</code>. If <code>Infallible</code> is an alias for <code>!</code>, this ought to &quot;fallback&quot; to <code>!</code>.</p>
+<h2 id="proposal-fallback-chooses-between--and--based-on-the-coercion-graph"><a class="header" href="#proposal-fallback-chooses-between--and--based-on-the-coercion-graph">Proposal: fallback chooses between <code>()</code> and <code>!</code> based on the coercion graph</a></h2>
+<p>So we've seen that changing the fallback <em>from</em> <code>()</code> causes unsoundness, but <em>keeping</em> the fallback as <code>!</code> can cause failed compilations. The proposal in this PR is to cause the fallback to be more subtle: diverging type variables prefer to fallback to <code>!</code> but <em>sometimes</em> fallback to <code>()</code> (in cases where they may leak out into live code, in particular).</p>
+<p>The idea is based on a &quot;coercion graph&quot;. Roughly speaking, each type that an unbound type variable <code>?A</code> is coerced into another unbound type variable <code>?B</code>, we create a <code>Coercion(?A -&gt; ?B)</code> relation (instead of immediately falling back to subtyping). At the end of type-checking, we can take any such relations that remain (because neither <code>?A</code> nor <code>?B</code> was constrained to another type) and create a graph where an edge <code>?A -&gt; B</code> indicates that <code>?A</code> is coerced into <code>?B</code>.
+Similarly, we can identify those type variables <code>?X</code> where we have a coercion <code>! -&gt; ?X</code>. We call those <em>diverging</em> type variables. Each <em>diverging</em> type variable will either fallback to <code>!</code> or <code>()</code> depending on the coercion graph:</p>
+<ul>
+<li>Let <code>D*</code> be the set of type variables that are reachable from a diverging type variable via edges in the coercion graph. These are therefore the variables where the <code>!</code> type &quot;flows into&quot; them (or would, if it didn't represent the result of a diverging execution). </li>
+<li>Let <code>N</code> be the set of type variables that are (a) unresolved and (b) not a member of <code>D*</code>. </li>
+<li>Let <code>N*</code> be the set of type variables that are reachable from <code>N</code>. </li>
+<li>Each diverging type variable in <code>D</code> will fallback to <code>()</code> if it can reach a variable in <code>N*</code> in the coercion graph, and otherwise fallback to <code>!</code>. </li>
+</ul>
+<p>The intuition here is: if there is some group of unconstrained type variables <code>?X</code> that are all dominated in the coercion graph by the type <code>!</code>, then they fallback to <code>!</code>. If there are type variables in the coercion graph that are the <em>target</em> of a <code>!</code> coercion but <em>also</em> flow into variable that are the target of other coercions, they fallback to <code>()</code>. </p>
+<h3 id="effect-on-66173"><a class="header" href="#effect-on-66173">Effect on <a href="https://github.com/rust-lang/rust/issues/66173">#66173</a></a></h3>
+<p>Recall the example from <a href="https://github.com/rust-lang/rust/issues/66173">#66173</a>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let x: /*?X*/ = match something() {
+    pattern1 =&gt; Default::default(), // has type `?T`
+    pattern2 =&gt; panic!(&quot;...&quot;), // has type `!`
+}; // the match has type `?M`
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here we have a coercion graph as follows:</p>
+<pre><code>?T -&gt; ?M
+! -&gt; ?M
+?M -&gt; ?X
+</code></pre>
+<p>In this case, applying the rules above:</p>
+<ul>
+<li>The set <code>D</code> of diverging variables is <code>[?M]</code></li>
+<li>The set <code>D*</code> of variables reachable from <code>D</code> is <code>[?M, ?X]</code></li>
+<li>The set <code>N</code> of non-diverging variables is <code>[?T]</code></li>
+<li>The set <code>N*</code> of variables reachable from <code>N</code> is <code>[?X, ?X, ?T]</code></li>
+<li>Since the diverging variable <code>?M</code> can reach a variable in <code>N*</code>, it falls back to <code>()</code>, and the unsoundness is averted.</li>
+</ul>
+<h3 id="effect-on-66757"><a class="header" href="#effect-on-66757">Effect on <a href="https://github.com/rust-lang/rust/issues/66757">#66757</a></a></h3>
+<p>Recall this example much like <a href="https://github.com/rust-lang/rust/issues/66757">#66757</a>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>&lt;?R as From&lt;?F&gt;&gt;::from(return)
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here we have a coercion graph as follows:</p>
+<pre><code>! -&gt; ?F
+</code></pre>
+<p>In particular, the type of the argument is <code>?F</code> and it is the target of a coercion from <code>!</code> (the type of the <code>return</code> expression). Since <code>?F</code> is <em>only</em> reachable from a <code>!</code>, it falls back to <code>!</code> as desired.</p>
+<h3 id="weird-cases"><a class="header" href="#weird-cases">Weird cases</a></h3>
+<p>There are some &quot;weird cases&quot; where <code>()</code> fallback can result even in dead code.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut x;
+x = return;
+x = Default::default();
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here, the type <code>?X</code> of <code>x</code> will have an &quot;incoming edge&quot; from the result of <code>Default::default</code> which will cause it to fallback to <code>()</code>. Seems ok.</p>
+<h3 id="backwards-incompatibilies"><a class="header" href="#backwards-incompatibilies">Backwards incompatibilies</a></h3>
+<p>Changing the fallback from <em>always</em> preferring <code>()</code> to <em>sometimes</em> preferring <code>!</code> can still cause regressions:</p>
+<pre><pre class="playground"><code class="language-rust">trait Foo { }
+impl Foo for () { }
+impl Foo for i32 { }
+fn gimme&lt;F: Foo&gt;(f: F) { }
+fn main() {
+    gimme(return);
+}
+</code></pre></pre>
+<p>Here, the type argument of <code>gimme(return)</code> will fallback to <code>!</code> and stop compiling. </p>
+<p>It can also cause changes in behavior, though that is relatively difficult to engineer. An example might be:</p>
+<pre><code>match true {
+    true =&gt; Cell::new(Default::default()),
+    false =&gt; Cell::new(return),
+}
+</code></pre>
+<p>In this case, the type variable for <code>Default::default</code> is never directly coerced into the type variable for <code>return</code>, so the latter would still fallback to <code>!</code>. In this example that would cause a compilation failure but one could imagine variants, similar to #66173, which would be unsound. (It's worth noting that the lint which @blitzerr and I were experimenting with <em>would</em> detect cases like this, though unfortunately it also detected its fair share of false warnings.) </p>
+<h2 id="future-extensions"><a class="header" href="#future-extensions">Future extensions</a></h2>
+<p>I would like to deprecate the <code>()</code> fallback. I believe that these cases ought to be hand-annotated and are quite surprising. Consider Example 1 from <a href="https://github.com/rust-lang/rust/issues/66173#issuecomment-720527102">this github comment</a>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>parser.unexpected()?;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here the <code>?</code> desugaring winds up causing this to fall back to <code>()</code>, but I think it should require manual annotation, as removing the <code>?</code> would require manual annotation. We can consider this separately but this branch should make it possible to do such a transition over an edition, perhaps.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-rfc"><a class="header" href="#-rfc">✨ RFC</a></h1>
 <ul>
 <li>Feature Name: never_type, never_type_fallback</li>
