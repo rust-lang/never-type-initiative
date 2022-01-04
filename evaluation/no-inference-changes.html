@@ -185,7 +185,7 @@ variable is necessary to make this work with the current compiler
 implementation.  Further, changing the compiler to avoid this seems relatively
 hard (FIXME: just how hard?). This regression is prominent enough that it makes
 fully avoiding inference changes not possible.</p>
-<h1 id="con-misleadingconfusing-fallback"><a class="header" href="#con-misleadingconfusing-fallback">Con: misleading/confusing fallback</a></h1>
+<h1 id="over-eager--fallback"><a class="header" href="#over-eager--fallback">Over-eager <code>()</code> fallback</a></h1>
 <p>This leads to the painpoint (amongst others) identified in
 <a href="https://github.com/rust-lang/rust/issues/66738">rust-lang/rust#66738</a>. This may
 also be a regression in some cases if users start more explicitly writing <code>!</code> in
@@ -235,6 +235,20 @@ out.</p>
 <p>This kind of interaction is relatively common, which makes changes to closure
 return types that &quot;make sense&quot; at an intuitive level actually commonly result in
 errors.</p>
+<h1 id="unsizing-fails-due-to-eager-fallback"><a class="header" href="#unsizing-fails-due-to-eager-fallback">Unsizing fails due to eager fallback</a></h1>
+<p>See <a href="https://github.com/rust-lang/rust/issues/49593">rust-lang/rust#49593</a>.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn foo(x: !) -&gt; Box&lt;dyn std::error::Error&gt; {
+    Box::new(x)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This is essentially the same as the previous case, where we have <code>x</code> generate a
+coercion at the function call site, meaning that we have <code>Box::&lt;?T&gt;::new(...)</code>
+with no constraints on <code>?T</code>, which means <code>?T = ()</code> with no fallback changes.
+Since <code>(): !Error</code>, this fails to compile.</p>
 
                     </main>
 
