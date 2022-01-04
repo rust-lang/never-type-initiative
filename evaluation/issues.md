@@ -42,5 +42,8 @@ Most of this code is implemented, gated on `never_type_fallback`,  landed in
 # Pain point / confusing behavior
 
 * [Closure return types are `()` even if body `!`](https://github.com/rust-lang/rust/issues/66738)
-
+* Missing `From<!> for T`
+    * Conflicts with `From<T> for <T>`
+    * After stabilizing `!`, a crate can add `From<!> for MyType` preventing a
+      std impl.
 

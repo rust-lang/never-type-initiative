@@ -45,7 +45,7 @@ implementation.  Further, changing the compiler to avoid this seems relatively
 hard (FIXME: just how hard?). This regression is prominent enough that it makes
 fully avoiding inference changes not possible.
 
-# Con: misleading/confusing fallback
+# Over-eager `()` fallback
 
 This leads to the painpoint (amongst others) identified in
 [rust-lang/rust#66738](https://github.com/rust-lang/rust/issues/66738). This may
@@ -103,3 +103,18 @@ out.
 This kind of interaction is relatively common, which makes changes to closure
 return types that "make sense" at an intuitive level actually commonly result in
 errors.
+
+# Unsizing fails due to eager fallback
+
+See [rust-lang/rust#49593](https://github.com/rust-lang/rust/issues/49593).
+
+```rust
+fn foo(x: !) -> Box<dyn std::error::Error> {
+    Box::new(x)
+}
+```
+
+This is essentially the same as the previous case, where we have `x` generate a
+coercion at the function call site, meaning that we have `Box::<?T>::new(...)`
+with no constraints on `?T`, which means `?T = ()` with no fallback changes.
+Since `(): !Error`, this fails to compile.
