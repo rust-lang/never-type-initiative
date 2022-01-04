@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item "><a href="index.html">👋 Welcome</a></li><li class="chapter-item "><a href="updates.html">✏️ Updates</a></li><li class="chapter-item "><a href="CHARTER.html">📜 Charter</a></li><li class="chapter-item "><a href="evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="evaluation/issues.html">PRs/Issues</a></li><li class="chapter-item "><a href="evaluation/no-inference-changes.html">No inference changes</a></li></ol></li><li class="chapter-item "><a href="explainer.html">📚 Explainer</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="explainer/conditional-fallback-v1.html">Conditional Fallback v1</a></li></ol></li><li class="chapter-item "><a href="RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="FAQ.html">😕 FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item "><a href="index.html">👋 Welcome</a></li><li class="chapter-item "><a href="updates.html">✏️ Updates</a></li><li class="chapter-item "><a href="CHARTER.html">📜 Charter</a></li><li class="chapter-item "><a href="evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="evaluation/issues.html">PRs/Issues</a></li><li class="chapter-item "><a href="evaluation/no-inference-changes.html">No inference changes</a></li></ol></li><li class="chapter-item "><a href="explainer.html">📚 Explainer</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="explainer/conditional-fallback-v1.html">Conditional Fallback v1</a></li><li class="chapter-item "><a href="explainer/coercion-semantics.html">Coercion semantics</a></li></ol></li><li class="chapter-item "><a href="RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="FAQ.html">😕 FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -285,6 +285,31 @@ the core algorithm.</p>
 <li>Conflicts with <code>From&lt;T&gt; for &lt;T&gt;</code></li>
 <li>After stabilizing <code>!</code>, a crate can add <code>From&lt;!&gt; for MyType</code> preventing a
 std impl.</li>
+</ul>
+</li>
+<li>Uninhabited enums (e.g., for errors)</li>
+</ul>
+<h1 id="miscellaneous"><a class="header" href="#miscellaneous">Miscellaneous</a></h1>
+<ul>
+<li>Proposed (and rejected) change of fallback to <code>!</code>
+<a href="https://github.com/rust-lang/rust/issues/40801">rust-lang/rust#40801</a>.</li>
+<li>Propagating coercions more 'deeply'
+<a href="https://github.com/rust-lang/rust/issues/40924">rust-lang/rust#40924</a>
+May help avoid some of the current problems of over-eagerly coercing into
+inference variables, for example.</li>
+<li>Prohibit coercion to <code>!</code> from other types in trailing expressions after a
+diverging expression
+<a href="https://github.com/rust-lang/rust/issues/46325">rust-lang/rust#46325</a>
+<ul>
+<li>Affected
+<a href="https://github.com/rust-lang/rust/pull/40224">rust-lang/rust#40224</a>,
+removing the type-check success case discussed therein.</li>
+</ul>
+</li>
+<li><code>resolve_trait_on_defaulted_unit</code> lint
+<a href="https://github.com/rust-lang/rust/issues/39216">rust-lang/rust#39216</a>
+<ul>
+<li><a href="https://github.com/rust-lang/rust/issues/51125">Regression issue</a></li>
 </ul>
 </li>
 </ul>
@@ -517,6 +542,126 @@ fn main() {
 <span class="boring">}
 </span></code></pre></pre>
 <p>Here the <code>?</code> desugaring winds up causing this to fall back to <code>()</code>, but I think it should require manual annotation, as removing the <code>?</code> would require manual annotation. We can consider this separately but this branch should make it possible to do such a transition over an edition, perhaps.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="to-"><a class="header" href="#to-">To <code>!</code></a></h1>
+<p>This discusses the semantics for coercion into <code>!</code> from some expression.
+Currently, these rules largely come down to coercion to <code>!</code> being possible
+&quot;after&quot; an expression with <code>!</code> type is encountered, such as <code>return</code> or <code>break</code>.</p>
+<p>FIXME: It seems like this may have subtle differences as the divergence
+checking is done on HIR(?) but MIR may end up lowered into a different order --
+should write out the rules and check more thoroughly. Relevant code:</p>
+<ul>
+<li>
+<p><a href="https://github.com/rust-lang/rust/blob/2b681ac06b1a6b7ea39525e59363ffee0d1a68e5/compiler/rustc_typeck/src/check/fn_ctxt/checks.rs#L720"><code>compiler/rustc_typeck/src/check/fn_ctxt/checks.rs:720</code></a>
+If we have <em>definitely</em> diverged, then a missing tail expression does not
+force the return type to be <code>()</code> (i.e., the implicit expression is not
+present).</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn foo() -&gt; u32 {
+    return 0;
+    // would normally be an error as function returns u32, not (), but accepted.
+}
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+</ul>
+<p>FIXME: the above example does not feel obviously related to <code>!</code>, there's
+probably some more reading and digging to do here.</p>
+<p>Examples pulled from <code>src/test/ui/coercion/coerce-to-bang.rs</code> and <code>src/test/ui/coercion/coerce-to-bang-cast.rs</code>.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn foo(x: usize, y: !, z: usize) { }
+
+fn call_foo_a() {
+    foo(return, 22, 44);
+    //~^ ERROR mismatched types
+}
+
+fn call_foo_b() {
+    // Divergence happens in the argument itself, definitely ok.
+    foo(22, return, 44);
+}
+
+fn call_foo_c() {
+    // This test fails because the divergence happens **after** the
+    // coercion to `!`:
+    foo(22, 44, return); //~ ERROR mismatched types
+}
+
+fn call_foo_d() {
+    // This test passes because `a` has type `!`:
+    let a: ! = return;
+    let b = 22;
+    let c = 44;
+    foo(a, b, c); // ... and hence a reference to `a` is expected to diverge.
+    //~^ ERROR mismatched types
+}
+
+fn call_foo_e() {
+    // This test probably could pass but we don't *know* that `a`
+    // has type `!` so we don't let it work.
+    let a = return;
+    let b = 22;
+    let c = 44;
+    foo(a, b, c); //~ ERROR mismatched types
+}
+
+fn call_foo_f() {
+    // This fn fails because `a` has type `usize`, and hence a
+    // reference to is it **not** considered to diverge.
+    let a: usize = return;
+    let b = 22;
+    let c = 44;
+    foo(a, b, c); //~ ERROR mismatched types
+}
+
+fn array_a() {
+    // Return is coerced to `!` just fine, but `22` cannot be.
+    let x: [!; 2] = [return, 22]; //~ ERROR mismatched types
+}
+
+fn array_b() {
+    // Error: divergence has not yet occurred.
+    let x: [!; 2] = [22, return]; //~ ERROR mismatched types
+}
+
+fn tuple_a() {
+    // No divergence at all.
+    let x: (usize, !, usize) = (22, 44, 66); //~ ERROR mismatched types
+}
+
+fn tuple_b() {
+    // Divergence happens before coercion: OK
+    let x: (usize, !, usize) = (return, 44, 66);
+    //~^ ERROR mismatched types
+}
+
+fn tuple_c() {
+    // Divergence happens before coercion: OK
+    let x: (usize, !, usize) = (22, return, 66);
+}
+
+fn tuple_d() {
+    // Error: divergence happens too late
+    let x: (usize, !, usize) = (22, 44, return); //~ ERROR mismatched types
+}
+
+fn cast_a() {
+    let y = {return; 22} as !;
+    //~^ ERROR non-primitive cast
+}
+
+fn cast_b() {
+    let y = 22 as !; //~ ERROR non-primitive cast
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>See some background/discussion in <a href="https://github.com/rust-lang/rust/issues/40800">rust-lang/rust#40800</a>.</p>
+<h1 id="from-"><a class="header" href="#from-">From <code>!</code></a></h1>
+<p>Any coercion site with <code>!</code> as the &quot;from&quot; type always succeeds, with the
+destination type being the new type. This includes inference variables.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-rfc"><a class="header" href="#-rfc">✨ RFC</a></h1>
 <ul>
 <li>Feature Name: never_type, never_type_fallback</li>

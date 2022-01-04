@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>No inference changes - Never Type initiative</title>
+        <title>Coercion semantics - Never Type initiative</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item "><a href="../index.html">👋 Welcome</a></li><li class="chapter-item "><a href="../updates.html">✏️ Updates</a></li><li class="chapter-item "><a href="../CHARTER.html">📜 Charter</a></li><li class="chapter-item expanded "><a href="../evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../evaluation/issues.html">PRs/Issues</a></li><li class="chapter-item expanded "><a href="../evaluation/no-inference-changes.html" class="active">No inference changes</a></li></ol></li><li class="chapter-item "><a href="../explainer.html">📚 Explainer</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../explainer/conditional-fallback-v1.html">Conditional Fallback v1</a></li><li class="chapter-item "><a href="../explainer/coercion-semantics.html">Coercion semantics</a></li></ol></li><li class="chapter-item "><a href="../RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="../FAQ.html">😕 FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item "><a href="../index.html">👋 Welcome</a></li><li class="chapter-item "><a href="../updates.html">✏️ Updates</a></li><li class="chapter-item "><a href="../CHARTER.html">📜 Charter</a></li><li class="chapter-item "><a href="../evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../evaluation/issues.html">PRs/Issues</a></li><li class="chapter-item "><a href="../evaluation/no-inference-changes.html">No inference changes</a></li></ol></li><li class="chapter-item expanded "><a href="../explainer.html">📚 Explainer</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../explainer/conditional-fallback-v1.html">Conditional Fallback v1</a></li><li class="chapter-item expanded "><a href="../explainer/coercion-semantics.html" class="active">Coercion semantics</a></li></ol></li><li class="chapter-item "><a href="../RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="../FAQ.html">😕 FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -113,7 +113,7 @@
                         <a href="https://github.com/rust-lang/never-type-initiative" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
-                        <a href="https://github.com/rust-lang/never-type-initiative/edit/master/./evaluation/no-inference-changes.md" title="Suggest an edit" aria-label="Suggest an edit">
+                        <a href="https://github.com/rust-lang/never-type-initiative/edit/master/./explainer/coercion-semantics.md" title="Suggest an edit" aria-label="Suggest an edit">
                             <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
                     </div>
@@ -140,124 +140,135 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>This discusses the impact of just stabilizing <code>!</code> syntax and changing
-<code>std::convert::Infallible</code> to be an alias for <code>!</code>. (That is, no inference
-algorithm changes).</p>
-<h1 id="regression-inference-failures"><a class="header" href="#regression-inference-failures">Regression: inference failures</a></h1>
-<p>This leads to the regression identified in
-<a href="https://github.com/rust-lang/rust/issues/66757">rust-lang/rust#66757</a>.</p>
+                        <h1 id="to-"><a class="header" href="#to-">To <code>!</code></a></h1>
+<p>This discusses the semantics for coercion into <code>!</code> from some expression.
+Currently, these rules largely come down to coercion to <code>!</code> being possible
+&quot;after&quot; an expression with <code>!</code> type is encountered, such as <code>return</code> or <code>break</code>.</p>
+<p>FIXME: It seems like this may have subtle differences as the divergence
+checking is done on HIR(?) but MIR may end up lowered into a different order --
+should write out the rules and check more thoroughly. Relevant code:</p>
+<ul>
+<li>
+<p><a href="https://github.com/rust-lang/rust/blob/2b681ac06b1a6b7ea39525e59363ffee0d1a68e5/compiler/rustc_typeck/src/check/fn_ctxt/checks.rs#L720"><code>compiler/rustc_typeck/src/check/fn_ctxt/checks.rs:720</code></a>
+If we have <em>definitely</em> diverged, then a missing tail expression does not
+force the return type to be <code>()</code> (i.e., the implicit expression is not
+present).</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>struct E;
-
-impl From&lt;!&gt; for E {
-    fn from(_: !) -&gt; E {
-        E
-    }
-}
-
-#[allow(unreachable_code)]
-fn foo(never: !) {
-    &lt;E as From&lt;!&gt;&gt;::from(never);  // Ok
-    &lt;E as From&lt;_&gt;&gt;::from(never);  // Inference fails here
+</span>fn foo() -&gt; u32 {
+    return 0;
+    // would normally be an error as function returns u32, not (), but accepted.
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p>Without changes to type inference fallback, code such as the above with
-<em>explicit</em> <code>!</code> type now fails to compile. This happens because with <code>!</code>, unlike
-with <code>std::convert::Infallible</code>, <code>!</code> can coerce to any variable. That means that
-the coercion from <code>!</code> to <code>_</code> <em>succeeds</em>, leading to the inference failure here,
-as there's no constraint placed on the argument.</p>
-<p>The coercion to inference variables is <em>in general</em> desirable, because of code
-like this:</p>
+</li>
+</ul>
+<p>FIXME: the above example does not feel obviously related to <code>!</code>, there's
+probably some more reading and digging to do here.</p>
+<p>Examples pulled from <code>src/test/ui/coercion/coerce-to-bang.rs</code> and <code>src/test/ui/coercion/coerce-to-bang-cast.rs</code>.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>if foo {
-    loop {}
+</span>fn foo(x: usize, y: !, z: usize) { }
+
+fn call_foo_a() {
+    foo(return, 22, 44);
+    //~^ ERROR mismatched types
+}
+
+fn call_foo_b() {
+    // Divergence happens in the argument itself, definitely ok.
+    foo(22, return, 44);
+}
+
+fn call_foo_c() {
+    // This test fails because the divergence happens **after** the
+    // coercion to `!`:
+    foo(22, 44, return); //~ ERROR mismatched types
+}
+
+fn call_foo_d() {
+    // This test passes because `a` has type `!`:
+    let a: ! = return;
+    let b = 22;
+    let c = 44;
+    foo(a, b, c); // ... and hence a reference to `a` is expected to diverge.
+    //~^ ERROR mismatched types
+}
+
+fn call_foo_e() {
+    // This test probably could pass but we don't *know* that `a`
+    // has type `!` so we don't let it work.
+    let a = return;
+    let b = 22;
+    let c = 44;
+    foo(a, b, c); //~ ERROR mismatched types
+}
+
+fn call_foo_f() {
+    // This fn fails because `a` has type `usize`, and hence a
+    // reference to is it **not** considered to diverge.
+    let a: usize = return;
+    let b = 22;
+    let c = 44;
+    foo(a, b, c); //~ ERROR mismatched types
+}
+
+fn array_a() {
+    // Return is coerced to `!` just fine, but `22` cannot be.
+    let x: [!; 2] = [return, 22]; //~ ERROR mismatched types
+}
+
+fn array_b() {
+    // Error: divergence has not yet occurred.
+    let x: [!; 2] = [22, return]; //~ ERROR mismatched types
+}
+
+fn tuple_a() {
+    // No divergence at all.
+    let x: (usize, !, usize) = (22, 44, 66); //~ ERROR mismatched types
+}
+
+fn tuple_b() {
+    // Divergence happens before coercion: OK
+    let x: (usize, !, usize) = (return, 44, 66);
+    //~^ ERROR mismatched types
+}
+
+fn tuple_c() {
+    // Divergence happens before coercion: OK
+    let x: (usize, !, usize) = (22, return, 66);
+}
+
+fn tuple_d() {
+    // Error: divergence happens too late
+    let x: (usize, !, usize) = (22, 44, return); //~ ERROR mismatched types
+}
+
+fn cast_a() {
+    let y = {return; 22} as !;
+    //~^ ERROR non-primitive cast
+}
+
+fn cast_b() {
+    let y = 22 as !; //~ ERROR non-primitive cast
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p><code>if</code> expressions without else currently desugar such that the &quot;block&quot; is typed
-at an inference variable (later eq'd with <code>()</code>), so the coercion to an inference
-variable is necessary to make this work with the current compiler
-implementation.  Further, changing the compiler to avoid this seems relatively
-hard (FIXME: just how hard?). This regression is prominent enough that it makes
-fully avoiding inference changes not possible.</p>
-<h1 id="over-eager--fallback"><a class="header" href="#over-eager--fallback">Over-eager <code>()</code> fallback</a></h1>
-<p>This leads to the painpoint (amongst others) identified in
-<a href="https://github.com/rust-lang/rust/issues/66738">rust-lang/rust#66738</a>. This may
-also be a regression in some cases if users start more explicitly writing <code>!</code> in
-some places, though is not directly one at just stabilization time.</p>
-<pre><pre class="playground"><code class="language-rust">fn magic&lt;R, F: FnOnce() -&gt; R&gt;(f: F) -&gt; F { f }
-
-fn main() {
-    let f2 = magic(|| loop {}) as fn() -&gt; !;
-}
-</code></pre></pre>
-<p>The (presumed) expected behavior is that <code>loop {}</code>, having type <code>!</code>, means that
-the closure above will have a return type of <code>!</code>. However, that's not what
-actually happens: the closure's return type is set to an inference variable,
-<code>?T</code>. Since expressions in the return position are coerced to the return type,
-we end up with no requirement on the return type's inference variable. (The cast
-does not participate in inference, generally). This means that the inference
-variable is unconstrained and so falls back to <code>()</code>.</p>
-<p>Note that this behavior is currently relied upon by some libraries. For example,
-code like this is relatively common, which requires that closures return <code>()</code> or
-<code>u32</code>. This means that if the fallback doesn't go to <code>()</code>, we will end up with
-an error.</p>
-<pre><pre class="playground"><code class="language-rust">trait Bar { }
-impl Bar for () {  }
-impl Bar for u32 {  }
-
-fn foo&lt;R: Bar&gt;(_: impl Fn() -&gt; R) {}
-
-fn main() {
-    foo(|| panic!());
-}
-</code></pre></pre>
-<p>Take a snippet from <a href="https://github.com/seanmonstar/warp/blob/v0.1.11/src/test.rs#L491-L496">warp 0.1.11</a>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>wr_rx.map_err(|()| {
-    unreachable!(&quot;mpsc::Receiver doesn't error&quot;);
-})
-.forward(tx.sink_map_err(|_| ()))
-.map(|_| ());
-<span class="boring">}
-</span></code></pre></pre>
-<p>This code fails if the first closure is typed as <code>impl Fn(()) -&gt; !</code>, because
-<code>forward</code> requires that <code>!: From&lt;()&gt;</code> (i.e., that the error types are
-compatible). That impl is not currently available, so this code doesn't work
-out.</p>
-<p>This kind of interaction is relatively common, which makes changes to closure
-return types that &quot;make sense&quot; at an intuitive level actually commonly result in
-errors.</p>
-<h1 id="unsizing-fails-due-to-eager-fallback"><a class="header" href="#unsizing-fails-due-to-eager-fallback">Unsizing fails due to eager fallback</a></h1>
-<p>See <a href="https://github.com/rust-lang/rust/issues/49593">rust-lang/rust#49593</a>.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn foo(x: !) -&gt; Box&lt;dyn std::error::Error&gt; {
-    Box::new(x)
-}
-<span class="boring">}
-</span></code></pre></pre>
-<p>This is essentially the same as the previous case, where we have <code>x</code> generate a
-coercion at the function call site, meaning that we have <code>Box::&lt;?T&gt;::new(...)</code>
-with no constraints on <code>?T</code>, which means <code>?T = ()</code> with no fallback changes.
-Since <code>(): !Error</code>, this fails to compile.</p>
+<p>See some background/discussion in <a href="https://github.com/rust-lang/rust/issues/40800">rust-lang/rust#40800</a>.</p>
+<h1 id="from-"><a class="header" href="#from-">From <code>!</code></a></h1>
+<p>Any coercion site with <code>!</code> as the &quot;from&quot; type always succeeds, with the
+destination type being the new type. This includes inference variables.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../evaluation/issues.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../explainer/conditional-fallback-v1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../explainer.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../RFC.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -266,10 +277,10 @@ Since <code>(): !Error</code>, this fails to compile.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../evaluation/issues.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../explainer/conditional-fallback-v1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../explainer.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../RFC.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
