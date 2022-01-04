@@ -46,4 +46,22 @@ Most of this code is implemented, gated on `never_type_fallback`,  landed in
     * Conflicts with `From<T> for <T>`
     * After stabilizing `!`, a crate can add `From<!> for MyType` preventing a
       std impl.
+* Uninhabited enums (e.g., for errors)
 
+# Miscellaneous
+
+* Proposed (and rejected) change of fallback to `!`
+  [rust-lang/rust#40801](https://github.com/rust-lang/rust/issues/40801).
+* Propagating coercions more 'deeply'
+  [rust-lang/rust#40924](https://github.com/rust-lang/rust/issues/40924)
+  May help avoid some of the current problems of over-eagerly coercing into
+  inference variables, for example.
+* Prohibit coercion to `!` from other types in trailing expressions after a
+  diverging expression
+  [rust-lang/rust#46325](https://github.com/rust-lang/rust/issues/46325)
+  * Affected
+    [rust-lang/rust#40224](https://github.com/rust-lang/rust/pull/40224),
+    removing the type-check success case discussed therein.
+* `resolve_trait_on_defaulted_unit` lint
+  [rust-lang/rust#39216](https://github.com/rust-lang/rust/issues/39216)
+  * [Regression issue](https://github.com/rust-lang/rust/issues/51125)
