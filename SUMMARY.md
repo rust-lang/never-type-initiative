@@ -2,6 +2,7 @@
 
 - [👋 Welcome](./README.md)
 - [✏️ Updates](./updates.md)
+    - [Jan 2022](./updates/2022-01-11.md)
 - [📜 Charter](./CHARTER.md)
 - [🔬 Evaluation](./evaluation.md)
     - [PRs/Issues](./evaluation/issues.md)
