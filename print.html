@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item "><a href="index.html">👋 Welcome</a></li><li class="chapter-item "><a href="updates.html">✏️ Updates</a></li><li class="chapter-item "><a href="CHARTER.html">📜 Charter</a></li><li class="chapter-item "><a href="evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="evaluation/issues.html">PRs/Issues</a></li><li class="chapter-item "><a href="evaluation/no-inference-changes.html">No inference changes</a></li></ol></li><li class="chapter-item "><a href="explainer.html">📚 Explainer</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="explainer/conditional-fallback-v1.html">Conditional Fallback v1</a></li><li class="chapter-item "><a href="explainer/coercion-semantics.html">Coercion semantics</a></li></ol></li><li class="chapter-item "><a href="RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="FAQ.html">😕 FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item "><a href="index.html">👋 Welcome</a></li><li class="chapter-item "><a href="updates.html">✏️ Updates</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="updates/2022-01-11.html">Jan 2022</a></li></ol></li><li class="chapter-item "><a href="CHARTER.html">📜 Charter</a></li><li class="chapter-item "><a href="evaluation.html">🔬 Evaluation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="evaluation/issues.html">PRs/Issues</a></li><li class="chapter-item "><a href="evaluation/no-inference-changes.html">No inference changes</a></li></ol></li><li class="chapter-item "><a href="explainer.html">📚 Explainer</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="explainer/conditional-fallback-v1.html">Conditional Fallback v1</a></li><li class="chapter-item "><a href="explainer/coercion-semantics.html">Coercion semantics</a></li></ol></li><li class="chapter-item "><a href="RFC.html">✨ RFC</a></li><li class="chapter-item "><a href="FAQ.html">😕 FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -213,6 +213,26 @@ following command.</p>
 </ul>
 </li>
 <li>Link it from the <code>SUMMARY.md</code></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="2022-01-lang-team-update"><a class="header" href="#2022-01-lang-team-update">2022-01: Lang team update</a></h1>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<ul>
+<li>Work has started on inlining problems/evaluations from issues, gists, etc.
+See <a href="updates//evaluation/no-inference-changes.html">no inference changes</a>,
+<a href="updates//evaluation/issues.html">PRs/issues</a>.</li>
+</ul>
+<h2 id="goals-for-this-month"><a class="header" href="#goals-for-this-month">Goals for this month</a></h2>
+<ul>
+<li>Continue to fill out scenarios, particularly explanations of current
+feature-gated state and the effects (breakage, expectations for next steps).</li>
+</ul>
+<h2 id="questions-for-discussion-meeting-proposals"><a class="header" href="#questions-for-discussion-meeting-proposals">Questions for discussion, meeting proposals</a></h2>
+<ul>
+<li>No particular all-lang questions yet. Current trajectory suggests that we will
+have a complete-ish set of documents for lang review in 1-2 months, depending
+on bandwidth. Current expectation is that we have a roughly ready nightly
+implementation, but more work is needed to document it and the tradeoffs it
+makes.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-initiative_name-charter"><a class="header" href="#-initiative_name-charter">📜 {{INITIATIVE_NAME}} Charter</a></h1>
 <!--
@@ -669,7 +689,7 @@ destination type being the new type. This includes inference variables.</p>
 <li>RFC PR: Past <a href="https://github.com/rust-lang/rfcs/pull/1216">rust-lang/rfcs#1216</a></li>
 <li>Rust Issue: TBD</li>
 </ul>
-<h1 id="summary"><a class="header" href="#summary">Summary</a></h1>
+<h1 id="summary-1"><a class="header" href="#summary-1">Summary</a></h1>
 <p>Promote <code>!</code> to be a full-fledged type equivalent to an <code>enum</code> with no variants,
 and adjust default inference fallback to avoid breakage.</p>
 <h1 id="guide-level-explanation"><a class="header" href="#guide-level-explanation">Guide level explanation</a></h1>
