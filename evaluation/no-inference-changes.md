@@ -96,8 +96,9 @@ wr_rx.map_err(|()| {
 ```
 
 This code fails if the first closure is typed as `impl Fn(()) -> !`, because
-`forward` requires that `!: From<()>` (i.e., that the error types are
-compatible). That impl is not currently available, so this code doesn't work
+[`forward`](https://docs.rs/futures/0.1.31/futures/stream/trait.Stream.html#method.forward)
+requires that `!: From<()>` (i.e., that the error types are compatible). That
+impl is not currently available, so this code doesn't work
 out.
 
 This kind of interaction is relatively common, which makes changes to closure
