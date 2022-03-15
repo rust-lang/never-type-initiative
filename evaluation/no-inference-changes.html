@@ -229,8 +229,9 @@ fn main() {
 <span class="boring">}
 </span></code></pre></pre>
 <p>This code fails if the first closure is typed as <code>impl Fn(()) -&gt; !</code>, because
-<code>forward</code> requires that <code>!: From&lt;()&gt;</code> (i.e., that the error types are
-compatible). That impl is not currently available, so this code doesn't work
+<a href="https://docs.rs/futures/0.1.31/futures/stream/trait.Stream.html#method.forward"><code>forward</code></a>
+requires that <code>!: From&lt;()&gt;</code> (i.e., that the error types are compatible). That
+impl is not currently available, so this code doesn't work
 out.</p>
 <p>This kind of interaction is relatively common, which makes changes to closure
 return types that &quot;make sense&quot; at an intuitive level actually commonly result in
